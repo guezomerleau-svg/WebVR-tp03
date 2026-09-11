@@ -1,20 +1,39 @@
-# Structure de l'arme
+# Structure de l'arme et cibles
 
-Ce depot contient uniquement la structure reutilisable de l'arme a feu pour l'integration dans la scene VR du projet partenaire.
+## Prévisualiser les modèles
 
-## Utilisation
-
-```js
-import { Firearm } from './src/Firearm.js';
-
-const firearm = new Firearm();
-scene.add(firearm);
-
-// Point d'attache du controleur VR.
-controller.add(firearm);
-
-const origin = firearm.getMuzzleWorldPosition();
-const direction = firearm.getMuzzleWorldDirection();
+```bash
+npm install
+npm run dev
 ```
 
-Le module ne contient volontairement ni casque VR, ni scene de test, ni projectile, ni logique de gachette. `Grip` est le point d'attache de la main et `Muzzle` le point de sortie prevu pour l'exercice suivant.
+Ouvrir `http://localhost:5173/` pour comparer les modèles de l'arme. Glisser avec la souris pour tourner, utiliser la molette pour zoomer et les flèches pour changer de variante.
+
+## Tester l'exercice 4
+
+Ouvrir `http://localhost:5173/targets.html`.
+
+- Les cibles (cube, cône et cylindre) apparaissent automatiquement toutes les 1,5 secondes.
+- Cliquer dans la scène lance un projectile de test.
+- Un impact déclenche des particules, un son et augmente le compteur.
+- Appuyer sur `R` pour réinitialiser les cibles et le score.
+
+Dans la scène VR principale, le partenaire peut réutiliser `TargetSystem` ainsi :
+
+```js
+import { TargetSystem } from './src/TargetSystem.js';
+
+const targetSystem = new TargetSystem({
+  spawnDelay: 2,
+  maxTargets: 6,
+  onHit: ({ target, projectile }) => {
+    // Ajouter ici le score ou l'effet de jeu.
+  },
+});
+scene.add(targetSystem);
+
+// Dans la boucle de rendu, avec les projectiles de la scène.
+targetSystem.update(delta, projectiles);
+```
+
+Le moteur physique existant peut aussi appeler directement `targetSystem.checkProjectile(projectile)` après sa détection de collision. Le module ne dépend pas d'un moteur physique particulier.
